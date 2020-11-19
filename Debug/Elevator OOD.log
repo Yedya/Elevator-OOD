@@ -1,3 +1,4 @@
 ﻿  Source.cpp
-D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(164,69): warning C4018: '<=': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(168,99): warning C4018: '<=': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(319,25): warning C4018: '<': signed/unsigned mismatch
   Elevator OOD.vcxproj -> D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Debug\Elevator OOD.exe

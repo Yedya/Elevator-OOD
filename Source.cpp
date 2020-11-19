@@ -82,7 +82,7 @@ private:
 class Floor
 {
 public:
-	Floor()
+	Floor(int ID) : ID(ID)
 	{
 
 	}
@@ -103,11 +103,12 @@ class Request
 		{
 			ID = to_string(requestedFloor) + " " + to_string(direction);
 		}
-		//~Request();
+		~Request(void) 
+		{
+		};
 		Direction getDirection() { return direction; };
 		string getID() { return ID; };
 		int getRequestedFloor() { return requestedFloor; };
-
 	private:
 		string ID;
 		int requestedFloor;
@@ -131,6 +132,7 @@ class Elevator
 			{
 				char input;
 				string strInput;
+				int intputAsInt = -1;
 				int timer = 5;
 				while (inputReceived == false)
 				{
@@ -151,6 +153,8 @@ class Elevator
 					cin >> input;
 					cout << "\n";
 
+					int validInputAsInt = (int)input;
+
 					if (isdigit(input))
 					{
 						inputReceived = true;
@@ -161,7 +165,7 @@ class Elevator
 						cout << "\t Press a valid button " <<endl;
 					}
 				}
-				if (isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= buttons.size())
+				if ((int)input != currentFloor && isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= buttons.size())
 				{
 					inputReceived = true;
 					cout << "\t Button Pressed  " << input << " @  FLOOR " << currentFloor <<  endl;
@@ -183,8 +187,7 @@ class Elevator
 			
 
 			
-		}
-		
+		}		
 		void moveUp()
 		{
 
@@ -205,12 +208,11 @@ class Elevator
 		{
 			if (!requestQueue.empty())
 			{
-				//cout << "handleRequest   ";
 				handleRequest();
 			}
 			else
 			{
-				//cout << "IDLE TO  ";
+				cout << "\t Idle @  " << currentFloor << " " << endl;
 				//IDLE
 			}
 		}
@@ -255,18 +257,21 @@ class Elevator
 		{
 			//Get the request
 			Request request = requestQueue.front();
-			
+			requestQueue.pop();
 			//Deduce direction
 			Direction directionToMove = request.getDirection();
 
 			//Move up or down direction
 			if (directionToMove == UP)
 			{
-				cout << "\t MOVING TO  " << request.getRequestedFloor() << " " << endl;
+				cout << "\t Moving to  " << request.getRequestedFloor() << " " << endl;
+				if (!requestQueue.empty())
+				{
+				}
 				//moveUp();
 				waitFor(2);
 				currentFloor = request.getRequestedFloor();
-				requestQueue.pop();
+				//request.~Request();
 				cout << "\n";
 				cout << "\t Arrived at  " << currentFloor <<endl;
 			}
@@ -276,7 +281,6 @@ class Elevator
 				//moveDown();
 				waitFor(2);
 				currentFloor = request.getRequestedFloor();
-				requestQueue.pop();
 				cout << "\t Arrived at  " << currentFloor << endl;
 			}
 		}
@@ -301,12 +305,23 @@ class Building
 			numberOfFloors = numberOfFloors;
 			numberOfElevators = numberOfElevators;
 			ID = ID;
+			initializeFloors(numberOfFloors);
+
+			Elevator elevator1(5, 50);
 		};
 		static Building& getIntance()
 		{
 			static Building building;
 			return building; 
 		};
+		void initializeFloors(int numberOfFloors)
+		{
+			for (size_t i = 0; i < numberOfFloors; i++)
+			{
+				Floor newFloor(i + 1);
+				floors.push_back(newFloor);
+			}
+		}
 		int getID() { return ID; };
 		int getNumberOfFloors() { return numberOfFloors; };
 		int getNumberOfElevators() { return numberOfElevators; };
@@ -324,7 +339,7 @@ int main(void)
 
 	Building::getIntance().initializeBuilding(1, 50, 1);
 
-	Elevator elevator1(5, 50);
+	
 
 	system("pause");
 	return 0;
