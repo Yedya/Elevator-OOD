@@ -13,22 +13,76 @@
 using namespace std;
 #include <iostream>
 #include <chrono>
+#include <thread>
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-enum  Direction{UP,DOWN};
+enum  Direction{UP,DOWN,IDLE};
+
+string enum_to_string(Direction type) 
+{
+	switch (type) {
+	case UP:
+		return "UP";
+	case DOWN:
+		return "DOWN";
+	case IDLE:
+		return "IDLE";
+	default:
+		return "Invalid";
+	}
+}
 
 class Button
 {
 	public:
-		Button(){};
-		Button(int ID) :ID(ID) 
+		Button() {};
+		Button(int ID, int buttonNumber) :ID(ID)
 		{
 			wasPressed = false;
 		};
+		void buttonPressed(int ID)
+		{
+			wasPressed = true;
+		}
 		int getButtonStatus() { return wasPressed; };
 		int getID() { return ID; };
+		int getButtonNumber() { return buttonNumber; };
 	private:
 		int ID;
+		int buttonNumber;
 		bool wasPressed;
+};
+
+class FloorButton : public Button
+{
+	public:
+		FloorButton(){};
+		FloorButton(int ID, int buttonNumber) :Button{ ID,buttonNumber } {};
+	private:
+		int buttonNumber;
+};
+
+class DoorButton : public Button
+{
+public:
+	DoorButton() {};
+	DoorButton(int ID, int buttonNumber) :Button{ ID,buttonNumber } {};
+private:
+	int buttonNumber;
+};
+
+class Floor
+{
+public:
+	Floor()
+	{
+
+	}
+
+private:
+	int ID;
+
 };
 
 class Request
@@ -40,42 +94,114 @@ class Request
 		}
 		Request(int requestedFloor,Direction direction) : requestedFloor(requestedFloor), direction(direction)
 		{
-
+			ID = to_string(requestedFloor) + " " + to_string(direction);
 		}
-		~Request();
+		//~Request();
 		Direction getDirection() { return direction; };
-		int getID() { return ID; };
+		string getID() { return ID; };
 		int getRequestedFloor() { return requestedFloor; };
+
 	private:
-		int ID;
+		string ID;
 		int requestedFloor;
 		Direction direction;
 };
 
 class Elevator
 {
-public:
-	Elevator() {};
-	Elevator(int ID) : ID(ID)
-	{
-		currentFloor = 1;
-	}
-	void moveUp();
-	void moveDown();
-	void stop();
-	int getCurrentFloor() { return currentFloor; };
-	int getID() { return ID; };
-	queue<Request> getrequestQueue() { return requestQueue; };
-private:
-	int ID;
-	int currentFloor;
-	const int maxWeight = 1700;
-	queue<Request> requestQueue;
-	Request getNextRequestedFloor();
-	Direction getDirectionToMove();
-	vector<Button> buttons;
-};
+	public:
+		Elevator() {};
+		Elevator(int ID,int numberOfFloors) : ID(ID)
+		{
+			currentFloor = 1;
+			inputReceived = false;
+			initializeButtons(numberOfFloors);
+			waitForInput();
+		}
+		void waitForInput()
+		{
+			while (true)
+			{
+				char input;
 
+				while (inputReceived == false)
+				{
+					cout << "\t Wait for button to be pressed  " << endl;
+					cin >> input;
+					cout << "\n";
+					//if(input !=)
+					//inputReceived = false;
+					if (isdigit(input))
+					{
+						inputReceived = true;
+						break;
+					}
+				}
+				if (isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= buttons.size())
+				{
+					inputReceived = true;
+					cout << "\t Button Pressed " << input << endl;
+					int floorRequestNumber = (int)input - '0';
+					addRequest(floorRequestNumber);
+					input = 'a';
+				}
+				inputReceived = false;
+			}
+			
+
+			
+		}
+		void moveUp();
+		void moveDown();
+		void stop();
+		void openDoors();
+		void closeDoors();
+		int getCurrentFloor() { return currentFloor; };
+		int getID() { return ID; };
+		Direction getRequestDirection(int floorRequested) 
+		{
+			if (floorRequested > currentFloor)
+				return UP;
+			else if (floorRequested < currentFloor)
+				return DOWN;
+			return IDLE;
+		};
+		void addRequest(int floorRequested)
+		{
+			Direction directionToMove = getRequestDirection(floorRequested);
+			if (directionToMove == IDLE)
+				return;
+
+			cout << "CURRENT FLOOR " << currentFloor << " REQUESTED " << floorRequested << " DIRECTION " << enum_to_string(directionToMove) << endl;
+
+			Request newRequest(floorRequested, directionToMove);
+			requestQueue.push(newRequest);
+		}
+		queue<Request> getRequestQueue() { return requestQueue; };
+		void initializeButtons(int numberOfFloors)
+		{
+			buttons.resize(numberOfFloors);
+			for (int f = 1; f <= numberOfFloors; f++)
+			{
+				string eunumerateID = to_string(this->ID) + to_string(f);
+				FloorButton button(stoi(eunumerateID), f);
+				buttons[f - 1] = button;
+			}
+
+		}
+		vector<FloorButton> getButtons(int numberOfFloors) { return buttons; };
+
+	private:
+		bool inputReceived;
+		int ID;
+		int currentFloor;
+		const int maxWeight = 1700;
+		Direction directionToMove;
+		queue<Request> requestQueue;
+		Request getNextRequestedFloor();
+		Direction getDirectionToMove();
+		vector<FloorButton> buttons;
+};
 
 //Singleton
 class Building
@@ -97,16 +223,28 @@ class Building
 		int getNumberOfElevators() { return numberOfElevators; };
 	private:
 		Building(){};
+		vector<Floor> floors;
 		int ID;
 		int numberOfFloors;
 		int numberOfElevators;
 
 };
 
+void waitFor(int amount)
+{
+	sleep_for(nanoseconds(10));
+	sleep_until(system_clock::now() + seconds(amount));
+}
+
 int main(void)
 {
 
 	Building::getIntance().initializeBuilding(1, 50, 1);
+
+	Elevator elevator1(5, 50);
+
+	
+
 
 	system("pause");
 	return 0;
