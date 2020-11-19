@@ -33,6 +33,13 @@ string enum_to_string(Direction type)
 	}
 }
 
+void waitFor(int amount)
+{
+	sleep_for(nanoseconds(10));
+	sleep_until(system_clock::now() + seconds(amount));
+}
+
+
 class Button
 {
 	public:
@@ -116,46 +123,97 @@ class Elevator
 			currentFloor = 1;
 			inputReceived = false;
 			initializeButtons(numberOfFloors);
-			waitForInput();
+			initializeInputService();
 		}
-		void waitForInput()
+		void initializeInputService()
 		{
 			while (true)
 			{
 				char input;
-
+				string strInput;
+				int timer = 5;
 				while (inputReceived == false)
 				{
-					cout << "\t Wait for button to be pressed  " << endl;
+					cout << "\n";
+					cout << "\t Wait for button to be pressed  "  <<  endl;
+					//while (timer > 0)
+					//{
+					//	cout << "\t  " << timer;
+					//	waitFor(3);
+					//	timer--;
+					//	if (timer == 0)
+					//	{
+					//		waitFor(3);
+					//		timer = 5;
+					//	}
+					//}
+					
 					cin >> input;
 					cout << "\n";
-					//if(input !=)
-					//inputReceived = false;
+
 					if (isdigit(input))
 					{
 						inputReceived = true;
 						break;
 					}
+					else
+					{
+						cout << "\t Press a valid button " <<endl;
+					}
 				}
 				if (isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= buttons.size())
 				{
 					inputReceived = true;
-					cout << "\t Button Pressed " << input << endl;
+					cout << "\t Button Pressed  " << input << " @  FLOOR " << currentFloor <<  endl;
 					int floorRequestNumber = (int)input - '0';
 					addRequest(floorRequestNumber);
 					input = 'a';
 				}
+				else if (isdigit(input) && (int)input - '0' == 0 )
+				{
+					inputReceived = true;
+					cout << "\t Doors closing " << input << endl;
+
+					input = 'a';
+					closeDoors();
+				}
+				cout << "\n";
 				inputReceived = false;
 			}
 			
 
 			
 		}
-		void moveUp();
-		void moveDown();
-		void stop();
-		void openDoors();
-		void closeDoors();
+		
+		void moveUp()
+		{
+
+		}
+		void moveDown()
+		{
+
+		}
+		void stop()
+		{
+
+		}
+		void openDoors()
+		{
+
+		}
+		void closeDoors()
+		{
+			if (!requestQueue.empty())
+			{
+				//cout << "handleRequest   ";
+				handleRequest();
+			}
+			else
+			{
+				//cout << "IDLE TO  ";
+				//IDLE
+			}
+		}
 		int getCurrentFloor() { return currentFloor; };
 		int getID() { return ID; };
 		Direction getRequestDirection(int floorRequested) 
@@ -172,8 +230,8 @@ class Elevator
 			if (directionToMove == IDLE)
 				return;
 
-			cout << "CURRENT FLOOR " << currentFloor << " REQUESTED " << floorRequested << " DIRECTION " << enum_to_string(directionToMove) << endl;
-
+			//cout << "\t CURRENT FLOOR " << currentFloor << " REQUESTED " << floorRequested << " DIRECTION " << enum_to_string(directionToMove) << endl;
+			//cout << "\n";
 			Request newRequest(floorRequested, directionToMove);
 			requestQueue.push(newRequest);
 		}
@@ -187,10 +245,41 @@ class Elevator
 				FloorButton button(stoi(eunumerateID), f);
 				buttons[f - 1] = button;
 			}
+			DoorButton doorButton(0, 0);
+			buttons.push_back(doorButton);
 
 		}
-		vector<FloorButton> getButtons(int numberOfFloors) { return buttons; };
+		vector<Button> getButtons(int numberOfFloors) { return buttons; };
+		//This will only be called if the queue has requests 
+		void handleRequest()
+		{
+			//Get the request
+			Request request = requestQueue.front();
+			
+			//Deduce direction
+			Direction directionToMove = request.getDirection();
 
+			//Move up or down direction
+			if (directionToMove == UP)
+			{
+				cout << "\t MOVING TO  " << request.getRequestedFloor() << " " << endl;
+				//moveUp();
+				waitFor(2);
+				currentFloor = request.getRequestedFloor();
+				requestQueue.pop();
+				cout << "\n";
+				cout << "\t Arrived at  " << currentFloor <<endl;
+			}
+			else if (directionToMove == DOWN)
+			{
+				cout << "\t MOVING TO  " << request.getRequestedFloor() << " " << endl;
+				//moveDown();
+				waitFor(2);
+				currentFloor = request.getRequestedFloor();
+				requestQueue.pop();
+				cout << "\t Arrived at  " << currentFloor << endl;
+			}
+		}
 	private:
 		bool inputReceived;
 		int ID;
@@ -200,7 +289,7 @@ class Elevator
 		queue<Request> requestQueue;
 		Request getNextRequestedFloor();
 		Direction getDirectionToMove();
-		vector<FloorButton> buttons;
+		vector<Button> buttons;
 };
 
 //Singleton
@@ -230,21 +319,12 @@ class Building
 
 };
 
-void waitFor(int amount)
-{
-	sleep_for(nanoseconds(10));
-	sleep_until(system_clock::now() + seconds(amount));
-}
-
 int main(void)
 {
 
 	Building::getIntance().initializeBuilding(1, 50, 1);
 
 	Elevator elevator1(5, 50);
-
-	
-
 
 	system("pause");
 	return 0;
