@@ -39,7 +39,6 @@ void waitFor(int amount)
 	sleep_until(system_clock::now() + seconds(amount));
 }
 
-
 class Button
 {
 	public:
@@ -82,13 +81,75 @@ private:
 class Floor
 {
 public:
-	Floor(int ID) : ID(ID)
+	Floor(int ID,int numberOfFloors) : ID(ID)
 	{
+		initializeButtons(numberOfFloors);
+	}
+	void initializeButtons(int numberOfFloors)
+	{
+		floorButtons.resize(numberOfFloors);
+		for (int f = 1; f <= numberOfFloors; f++)
+		{
+			string eunumerateID = to_string(this->ID) + to_string(f);
+			FloorButton button(stoi(eunumerateID), f);
+			floorButtons[f - 1] = button;
+		}
+		DoorButton doorButton(0, 0);
+		floorButtons.push_back(doorButton);
+	}
+	void initializeInputService()
+	{
+		//while (true)
+		//{
+		//	char input;
+		//	string strInput;
+		//	int intputAsInt = -1;
+		//	int timer = 5;
+		//	while (inputReceived == false)
+		//	{
+		//		cout << "\n";
+		//		cout << "\t Wait for button to be pressed  " << endl;
+		//		cin >> input;
+		//		cout << "\n";
+
+		//		int validInputAsInt = (int)input;
+
+		//		if (isdigit(input))
+		//		{
+		//			inputReceived = true;
+		//			break;
+		//		}
+		//		else
+		//		{
+		//			cout << "\t Press a valid button " << endl;
+		//		}
+		//	}
+		//	if ((int)input != currentFloor && isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= floorButtons.size())
+		//	{
+		//		inputReceived = true;
+		//		cout << "\t Button Pressed  " << input << " @  FLOOR " << currentFloor << endl;
+		//		int floorRequestNumber = (int)input - '0';
+		//		//addRequest(floorRequestNumber);
+		//		input = 'a';
+		//	}
+		//	else if (isdigit(input) && (int)input - '0' == 0)
+		//	{
+		//		inputReceived = true;
+		//		cout << "\t Doors closing " << input << endl;
+
+		//		input = 'a';
+		//		//closeDoors();
+		//	}
+		//	cout << "\n";
+		//	inputReceived = false;
+		//}
 
 	}
-
 private:
 	int ID;
+	bool inputReceived;
+	int currentFloor;
+	vector<Button> floorButtons;
 
 };
 
@@ -138,18 +199,6 @@ class Elevator
 				{
 					cout << "\n";
 					cout << "\t Wait for button to be pressed  "  <<  endl;
-					//while (timer > 0)
-					//{
-					//	cout << "\t  " << timer;
-					//	waitFor(3);
-					//	timer--;
-					//	if (timer == 0)
-					//	{
-					//		waitFor(3);
-					//		timer = 5;
-					//	}
-					//}
-					
 					cin >> input;
 					cout << "\n";
 
@@ -184,9 +233,7 @@ class Elevator
 				cout << "\n";
 				inputReceived = false;
 			}
-			
 
-			
 		}		
 		void moveUp()
 		{
@@ -306,8 +353,7 @@ class Building
 			numberOfElevators = numberOfElevators;
 			ID = ID;
 			initializeFloors(numberOfFloors);
-
-			Elevator elevator1(5, 50);
+			initializeElevators(1);
 		};
 		static Building& getIntance()
 		{
@@ -318,8 +364,16 @@ class Building
 		{
 			for (size_t i = 0; i < numberOfFloors; i++)
 			{
-				Floor newFloor(i + 1);
+				Floor newFloor(i + 1,numberOfFloors);
 				floors.push_back(newFloor);
+			}
+		}
+		void initializeElevators(int numberOfElevators)
+		{
+			for (size_t i = 0; i < numberOfElevators; i++)
+			{
+				Elevator elevator1(i + 1, 50);
+				elevators.push_back(elevator1);
 			}
 		}
 		int getID() { return ID; };
@@ -328,6 +382,7 @@ class Building
 	private:
 		Building(){};
 		vector<Floor> floors;
+		vector<Elevator> elevators;
 		int ID;
 		int numberOfFloors;
 		int numberOfElevators;
@@ -336,7 +391,7 @@ class Building
 
 int main(void)
 {
-
+	//50 Floors, one elevator 
 	Building::getIntance().initializeBuilding(1, 50, 1);
 
 	
