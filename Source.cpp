@@ -84,6 +84,7 @@ public:
 	Floor(int ID,int numberOfFloors) : ID(ID)
 	{
 		initializeButtons(numberOfFloors);
+		initializeInputService();
 	}
 	void initializeButtons(int numberOfFloors)
 	{
@@ -99,50 +100,50 @@ public:
 	}
 	void initializeInputService()
 	{
-		//while (true)
-		//{
-		//	char input;
-		//	string strInput;
-		//	int intputAsInt = -1;
-		//	int timer = 5;
-		//	while (inputReceived == false)
-		//	{
-		//		cout << "\n";
-		//		cout << "\t Wait for button to be pressed  " << endl;
-		//		cin >> input;
-		//		cout << "\n";
+		while (true)
+		{
+			char input;
+			string strInput;
+			int intputAsInt = -1;
+			int timer = 5;
+			while (inputReceived == false)
+			{
+				cout << "\n";
+				cout << "\t Wait for floor to be pressed  " << endl;
+				cin >> input;
+				cout << "\n";
 
-		//		int validInputAsInt = (int)input;
+				int validInputAsInt = (int)input;
 
-		//		if (isdigit(input))
-		//		{
-		//			inputReceived = true;
-		//			break;
-		//		}
-		//		else
-		//		{
-		//			cout << "\t Press a valid button " << endl;
-		//		}
-		//	}
-		//	if ((int)input != currentFloor && isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= floorButtons.size())
-		//	{
-		//		inputReceived = true;
-		//		cout << "\t Button Pressed  " << input << " @  FLOOR " << currentFloor << endl;
-		//		int floorRequestNumber = (int)input - '0';
-		//		//addRequest(floorRequestNumber);
-		//		input = 'a';
-		//	}
-		//	else if (isdigit(input) && (int)input - '0' == 0)
-		//	{
-		//		inputReceived = true;
-		//		cout << "\t Doors closing " << input << endl;
+				if (!isdigit(input) && input == 'v')
+				{
+					inputReceived = true;
+					break;
+				}
+				else
+				{
+					//cout << "\t Press a valid button " << endl;
+				}
+			}
+			if ((int)input != currentFloor && isdigit(input) && (int)input - '0' >= 1 && (int)input - '0' <= floorButtons.size())
+			{
+				//inputReceived = true;
+				//cout << "\t Button Pressed  " << input << " @  FLOOR " << currentFloor << endl;
+				//int floorRequestNumber = (int)input - '0';
+				////addRequest(floorRequestNumber);
+				//input = 'a';
+			}
+			else if (isdigit(input) && (int)input - '0' == 0)
+			{
+				//inputReceived = true;
+				//cout << "\t Doors closing " << input << endl;
 
-		//		input = 'a';
-		//		//closeDoors();
-		//	}
-		//	cout << "\n";
-		//	inputReceived = false;
-		//}
+				//input = 'a';
+				////closeDoors();
+			}
+			cout << "\n";
+			inputReceived = false;
+		}
 
 	}
 private:
@@ -379,6 +380,7 @@ class Building
 		int getID() { return ID; };
 		int getNumberOfFloors() { return numberOfFloors; };
 		int getNumberOfElevators() { return numberOfElevators; };
+		vector<Elevator> getElevators(){ return elevators; };
 	private:
 		Building(){};
 		vector<Floor> floors;
@@ -392,9 +394,21 @@ class Building
 int main(void)
 {
 	//50 Floors, one elevator 
-	Building::getIntance().initializeBuilding(1, 50, 1);
+	//Building::getIntance().initializeBuilding(1, 50, 1);
 
-	
+	int x = 5;
+	int** ptr2;
+	int* ptr = &x;
+	ptr2 = &ptr;
+
+
+	cout << "Memeory Address &ptr &ptr2 &x " << &ptr << " " << &ptr2 << " " << &x << endl;
+	cout << "Values Address *ptr **ptr2 x " << *ptr << " " << **ptr2 << " " << x << endl;
+	cout << "Memeory Address ptr *ptr2 &x " << ptr << " " << *ptr2 << " " << &x << endl;
+	//cout << "Memeory Address " << *ptr << " " << **ptr2 << " " << &x;
+
+
+
 
 	system("pause");
 	return 0;

@@ -1,5 +1,6 @@
 ﻿  Source.cpp
-D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(180,99): warning C4018: '<=': signed/unsigned mismatch
-D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(330,25): warning C4018: '<': signed/unsigned mismatch
-D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(338,25): warning C4018: '<': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(128,98): warning C4018: '<=': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(218,99): warning C4018: '<=': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(366,25): warning C4018: '<': signed/unsigned mismatch
+D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Source.cpp(374,25): warning C4018: '<': signed/unsigned mismatch
   Elevator OOD.vcxproj -> D:\Personal Repos\OOD Practice\Elevator System OOD\Elevator-OOD\Debug\Elevator OOD.exe
